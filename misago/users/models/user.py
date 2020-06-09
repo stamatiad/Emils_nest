@@ -21,6 +21,9 @@ from ..utils import hash_email
 from .online import Online
 from .rank import Rank
 
+# Signals
+from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.dispatch import receiver
 
 class UserManager(BaseUserManager):
     def _create_user(self, username, email, password, **extra_fields):
@@ -116,6 +119,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         (LIMIT_INVITES_TO_FOLLOWED, _("Users I follow")),
         (LIMIT_INVITES_TO_NOBODY, _("Nobody")),
     ]
+
+    #This is my custom user logging feature:
+    activity_array = ArrayField(
+        ArrayField(
+            models.DateTimeField(null=True, blank=True),
+            size=2,
+            null=True,
+        ),
+        null=True,
+    )
 
     # Note that "username" field is purely for shows.
     # When searching users by their names, always use lowercased string
@@ -464,3 +477,21 @@ class AnonymousUser(DjangoAnonymousUser):
 
     def update_acl_key(self):
         raise TypeError("Can't update ACL key on anonymous users")
+
+@receiver(user_logged_in) 
+def _user_logged_in(sender, user, request, **kwargs):
+    print(f'User {user.username} just logged in!')
+    # First time login:
+    if user.activity_array is None:
+        user.activity_array = [[timezone.now(),None]]
+    else:
+        user.activity_array.append([timezone.now(),None])
+    print(user.activity_array)
+    user.save()
+
+@receiver(user_logged_out) 
+def _user_logged_out(sender, user, request, **kwargs):
+    print(f'User {user.username} just logged out!')
+    user.activity_array.append([None,timezone.now()])
+    print(user.activity_array)
+    user.save()
