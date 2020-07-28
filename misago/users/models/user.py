@@ -481,6 +481,7 @@ class AnonymousUser(DjangoAnonymousUser):
 @receiver(user_logged_in) 
 def _user_logged_in(sender, user, request, **kwargs):
     print(f'User {user.username} just logged in!')
+    print(user.activity_array)
     # First time login:
     if user.activity_array is None:
         user.activity_array = [[timezone.now(),None]]
@@ -492,6 +493,7 @@ def _user_logged_in(sender, user, request, **kwargs):
 @receiver(user_logged_out) 
 def _user_logged_out(sender, user, request, **kwargs):
     print(f'User {user.username} just logged out!')
+    print(user.activity_array)
     user.activity_array.append([None,timezone.now()])
     print(user.activity_array)
     user.save()
