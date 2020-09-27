@@ -25,6 +25,9 @@ from .rank import Rank
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.dispatch import receiver
 
+logger = logging.getLogger('django')
+
+
 class UserManager(BaseUserManager):
     def _create_user(self, username, email, password, **extra_fields):
         """
