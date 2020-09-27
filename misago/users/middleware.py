@@ -108,7 +108,6 @@ class TimeOutMiddleware:
     '''
     def __call__(self, request):
         response = self.get_response(request)
-        shouldLogout = False
         try:
             if request.user.is_authenticated:
                 if 'lastRequest' in request.session:            
@@ -125,13 +124,12 @@ class TimeOutMiddleware:
                     if elapsedTime.seconds > 90:
                         logger.info(f"Time from last beacon request is {elapsedTime.seconds}.Logging out user {request.user.username}.")
                         del request.session['lastRequest'] 
-                        shouldLogout = True
+                        request.session['autoLogout'] = True
+                        logout(request)
 
-                request.session['lastRequest'] = str(timezone.now())[:-6]
+                else:
+                    request.session['lastRequest'] = str(timezone.now())[:-6]
 
-                if shouldLogout:
-                    request.session['autoLogout'] = True
-                    logout(request)
 
             else:
                 if 'lastRequest' in request.session:
