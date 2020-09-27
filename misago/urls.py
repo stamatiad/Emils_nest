@@ -5,10 +5,18 @@ from . import hooks
 from .conf import settings
 from .core.views import forum_index
 
+from django.http import HttpResponse
+
 app_name = "misago"
+
+# Beacon view:
+def beacon(request):
+    return HttpResponse(status=200)
+
 
 # Register Misago Apps
 urlpatterns = hooks.urlpatterns + [
+    url('beacon/', beacon),
     url(r"^", include("misago.analytics.urls")),
     url(r"^", include("misago.legal.urls")),
     url(r"^", include("misago.users.urls")),

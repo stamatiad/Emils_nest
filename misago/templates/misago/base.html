@@ -69,7 +69,7 @@
     <script>
       setInterval( function(){
         console.log("Checking user in...");
-        $.when($.get("http://www.dreambook.me/dream-team/api/null/"))
+        $.when($.get("http://www.dreambook.me/dream-team/beacon/"))
         .then(function (data) {
           console.log("User just checked in!")
           console.log(data)
