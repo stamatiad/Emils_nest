@@ -493,7 +493,15 @@ def _user_logged_in(sender, user, request, **kwargs):
 @receiver(user_logged_out) 
 def _user_logged_out(sender, user, request, **kwargs):
     print(f'User {user.username} just logged out!')
-    print(user.activity_array)
-    user.activity_array.append([None,timezone.now()])
+    # Here I must handle two types of logout:
+    # 1 the user invoked one
+    # 2 the automatic one
+    if request.session['autoLogout']:
+        del request.session['autoLogout']
+    else:
+        if user.activity_array[-1][0] is None:
+            user.activity_array[-1] = [None,timezone.now()]
+        else:
+            user.activity_array.append([None,timezone.now()])
     print(user.activity_array)
     user.save()
