@@ -497,6 +497,7 @@ def _user_logged_out(sender, user, request, **kwargs):
     # 1 the user invoked one
     # 2 the automatic one
     if request.session['autoLogout']:
+        logger.info(f"Auto-loggin out user: {user}")
         del request.session['autoLogout']
     else:
         if user.activity_array[-1][0] is None:
