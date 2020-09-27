@@ -71,6 +71,7 @@ class ActivityMiddleware:
         response = self.get_response(request)
 
         user = request.user
+        logger.info(f"Recieved request from user {user}")
         try:
             # If user activity exists (not shiny new user!)
             if user.activity_array is not None:

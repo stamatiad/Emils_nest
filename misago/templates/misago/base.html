@@ -62,8 +62,22 @@
       {% endif %}
     {% endspaceless %}
     <script type="application/ld+json">{"@context":"http://schema.org","@type":"WebSite","url":"{{ settings.forum_address }}"}</script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   </head>
   <body {% if misago_agreement %}class="agreement-overlay-visible"{% endif %}>
+    <script>
+      setInterval( function(){
+        console.log("Checking user in...");
+        $.when($.get("http://www.dreambook.me/dream-team/api/null/"))
+        .then(function (data) {
+          console.log("User just checked in!")
+          console.log(data)
+        })
+        , 30000
+      );
+    </script>
+
     {% if settings.google_tracking_id %}
       {% include "misago/analytics.html" %}
     {% endif %}
