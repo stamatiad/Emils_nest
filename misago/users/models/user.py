@@ -480,7 +480,7 @@ class AnonymousUser(DjangoAnonymousUser):
 
 @receiver(user_logged_in) 
 def _user_logged_in(sender, user, request, **kwargs):
-    print(f'User {user.username} just logged in!')
+    logger.info(f'User {user.username} just logged in! (reciever msg).')
     print(user.activity_array)
     # First time login:
     if user.activity_array is None:
@@ -492,14 +492,15 @@ def _user_logged_in(sender, user, request, **kwargs):
 
 @receiver(user_logged_out) 
 def _user_logged_out(sender, user, request, **kwargs):
-    print(f'User {user.username} just logged out!')
+    logger.info(f'User {user.username} just logged out! (reciever msg).')
     # Here I must handle two types of logout:
     # 1 the user invoked one
     # 2 the automatic one
     if request.session['autoLogout']:
-        logger.info(f"Auto-loggin out user: {user}")
+        logger.info(f"Auto-loggin out user: {user.username}")
         del request.session['autoLogout']
     else:
+        logger.info(f"Normal-loggin out user: {user.username}")
         if user.activity_array[-1][0] is None:
             user.activity_array[-1] = [None,timezone.now()]
         else:
