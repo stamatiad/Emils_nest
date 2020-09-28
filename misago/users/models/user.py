@@ -496,18 +496,19 @@ def _user_logged_in(sender, user, request, **kwargs):
 
 @receiver(user_logged_out) 
 def _user_logged_out(sender, user, request, **kwargs):
-    logger.info(f'User {user.username} just logged out! (reciever msg).')
-    # Here I must handle two types of logout:
-    # 1 the user invoked one
-    # 2 the automatic one
-    if request.session.get('autoLogout', False):
-        logger.info(f"Normal-loggin out user: {user.username}")
-        if user.activity_array[-1][0] is None:
-            user.activity_array[-1] = [None,timezone.now()]
+    if user is not None:
+        logger.info(f'User {user.username} just logged out! (reciever msg).')
+        # Here I must handle two types of logout:
+        # 1 the user invoked one
+        # 2 the automatic one
+        if request.session.get('autoLogout', False):
+            logger.info(f"Normal-loggin out user: {user.username}")
+            if user.activity_array[-1][0] is None:
+                user.activity_array[-1] = [None,timezone.now()]
+            else:
+                user.activity_array.append([None,timezone.now()])
         else:
-            user.activity_array.append([None,timezone.now()])
-    else:
-        logger.info(f"Auto-loggin out user: {user.username}")
-        request.session['autoLogout'] = False
-    print(user.activity_array)
-    user.save()
+            logger.info(f"Auto-loggin out user: {user.username}")
+            request.session['autoLogout'] = False
+        print(user.activity_array)
+        user.save()

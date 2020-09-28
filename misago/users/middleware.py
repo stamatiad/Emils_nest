@@ -128,6 +128,7 @@ class TimeOutMiddleware:
                         logout(request)
 
                 request.session['lastRequest'] = str(timezone.now())[:-6]
+                request.session['autoLogout'] = False
 
 
             else:
